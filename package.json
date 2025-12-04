@@ -1,0 +1,25 @@
+{
+  "name": "acquire",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/AlejandroPG06/acquire#readme",
+  "bugs": {
+    "url": "https://github.com/AlejandroPG06/acquire/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlejandroPG06/acquire.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.0.0"
+  }
+}
