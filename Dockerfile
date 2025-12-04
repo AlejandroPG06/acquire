@@ -13,8 +13,8 @@ RUN npm ci --omit=dev
 # Copiamos el resto del código (incluye /model)
 COPY . .
 
-# El servicio escucha en 3003
-EXPOSE 3003
+# El servicio escucha en 3001
+EXPOSE 3001
 
 # Comando de arranque
-CMD ["node", "server.js"]
+CMD ["node", "acquire_data.js"]

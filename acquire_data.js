@@ -65,7 +65,7 @@ async function executeAcquisition() {
 
     if (!kunnaResult?.values || kunnaResult.values.length < 3) throw new Error("Datos insuficientes en Kunna");
 
-    const rawValues = kunnaResult.values.slice(0, 3).map(row => row[1]);
+    const rawValues = kunnaResult.values.slice(0, 3).map(row => row[2]);
     const timestamps = kunnaResult.values.slice(0, 3).map(row => row[0]);
 
     const features = [
