@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3001
 
 # Comando de arranque
-CMD ["node", "acquire_data.js"]
+CMD ["node", "server.js"]
