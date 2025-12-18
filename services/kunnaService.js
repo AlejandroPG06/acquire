@@ -9,10 +9,10 @@ function calculateDates() {
     const now = new Date();
     let targetDate = new Date(now);
     
+    // Si ya es muy tarde, apuntamos a mañana
     if (now.getHours() > 23) {
         targetDate.setDate(targetDate.getDate() + 1);
     }
-    // Normalizamos la hora para que quede limpio
     targetDate.setMinutes(0, 0, 0);
 
     const timeEnd = new Date(targetDate);
@@ -48,40 +48,49 @@ async function fetchKunna(timeStart, timeEnd) {
     }
 }
 
-// 3. Función Principal (La que llama el controlador)
+// --- NUEVA FUNCIÓN DE TU COMPAÑERO ---
+function prepareFeatures(kunnaValues, targetDate) {
+    if (!kunnaValues || kunnaValues.length < 3) throw new Error("Datos insuficientes de Kunna");
+
+    // Limpieza explícita de datos (parseFloat asegura que es número)
+    const v_t1 = parseFloat(kunnaValues[0][2]);
+    const v_t2 = parseFloat(kunnaValues[1][2]);
+    const v_t3 = parseFloat(kunnaValues[2][2]);
+
+    const features = [
+        v_t1,
+        v_t2,
+        v_t3,
+        12, // Hora fija (Truco para estabilizar la IA)
+        targetDate.getDay(),
+        targetDate.getMonth() + 1,
+        targetDate.getDate(),
+    ];
+
+    return features;
+}
+
+// 4. Función Principal
 async function executeAcquisition() {
     const { targetDate, timeEnd, timeStart } = calculateDates();
     const kunnaResult = await fetchKunna(timeStart, timeEnd);
 
-    if (!kunnaResult?.values || kunnaResult.values.length < 3) {
-        throw new Error("Datos insuficientes recibidos de Kunna");
-    }
+    // Usamos la función de limpieza
+    const features = prepareFeatures(kunnaResult.values, targetDate);
 
-    // --- AQUÍ ESTÁ LA CLAVE PARA QUE COINCIDA CON TU FOTO ---
-    
-    // row[2] es el VALOR (número)
-    const rawValues = kunnaResult.values.slice(0, 3).map(row => row[2]); 
-    // row[0] es la FECHA (string) -> Para daysUsed
+    // Extraemos info para guardar en BD (metadatos)
+    const dailyValues = [features[0], features[1], features[2]]; // Los 3 primeros son los consumos
     const timestamps = kunnaResult.values.slice(0, 3).map(row => row[0]);
 
-    // Construimos el array de 7 features
-    const features = [
-        ...rawValues,
-        targetDate.getHours(),
-        targetDate.getDay(),
-        targetDate.getMonth() + 1,
-        targetDate.getDate()
-    ];
-
-    // Guardamos con la estructura EXACTA del modelo
+    // Guardamos en Mongo
     const newData = new AcquiredData({
         features: features,
         targetDate: targetDate,
-        dailyValues: rawValues, // <--- Esto rellena el campo dailyValues
+        dailyValues: dailyValues, 
         kunnaMeta: {
             alias: ALIAS,
             name: "1d",
-            daysUsed: timestamps // <--- Esto rellena las fechas usadas
+            daysUsed: timestamps
         },
         fetchMeta: {
             timeStart: timeStart,
